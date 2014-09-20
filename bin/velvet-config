@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+import argparse
+
+import velvet.aws.config
+import velvet.config
+from fabric.api import env
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Velvet command line tool')
+    parser.add_argument('--config', dest='config', help='Velvet configuration file')
+    parser.add_argument('--aws-config', dest='aws_config', help='AWS configuration file')
+    parser.add_argument('--import-credentials', dest='import_iam_csv', help='AWS IAM user credentials file to import')
+    parser.add_argument('--import-access-key', dest='import_iam_json', help='AWS IAM create-access-key JSON response file to import')
+    args = parser.parse_args()
+
+    if args.config:
+        env.config = args.config
+    else:
+        env.setdefault('config', velvet.config.find_config_file())
+
+    if args.aws_config:
+        env.aws_config = args.aws_config
+
+    aws_config = None
+    if args.import_iam_csv:
+        aws_config = velvet.aws.config.import_iam_csv(args.import_iam_csv)
+    if args.import_iam_json:
+        aws_config = velvet.aws.config.import_iam_json(args.import_iam_json)
+
+    aws_config = velvet.aws.config.config_input(aws_config)
+    velvet.aws.config.save(aws_config)
+
+    velvet.config.save()
+
+
+if __name__ == "__main__":
+    main()

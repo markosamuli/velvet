@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import subprocess
+
+import velvet.config
+from fabric.api import env
+
+def main():
+    parser = argparse.ArgumentParser(description='Generate CloudFormation templates')
+    parser.add_argument('--config', dest='config', help='Velvet configuration file')
+    parser.add_argument('environment', type=str, help='Environment name, eg. dev')
+    parser.add_argument('template', type=str, help='Template name, eg. opsworks')
+    args = parser.parse_args()
+
+    if args.config:
+        env.config = args.config
+    else:
+        env.config = velvet.config.find_config_file()
+
+    environment = None
+    if 'environment' in args:
+        environment = args.environment
+
+    template = None
+    if 'template' in args:
+        template = args.template
+
+    if environment and template:
+        config = velvet.config.environment(environment)
+        generate_template(environment, template)
+
+
+def generate_template(environment, template):
+    # print environment
+    pyplate = os.path.join(env.cloudformation_path, template + '.py')
+    outfile = os.path.join(env.cloudformation_path, environment + '-' + template + '.json')
+    options = os.path.join(env.cloudformation_path, 'mappings', environment + '.yaml')
+    cmd = [
+        'cfn_py_generate',
+        pyplate,
+        outfile,
+        '--options',
+        options,
+    ]
+    status = subprocess.call(cmd, env=os.environ)
+    if status > 0:
+        print "Failed to generate the template"
+        return False
+    else:
+        print "Template created in " + outfile
+        return True
+
+
+if __name__ == "__main__":
+    main()
