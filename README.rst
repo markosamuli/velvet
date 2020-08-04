@@ -192,3 +192,11 @@ Fabric main file `fabric.py` is used for environment configuration and loading a
         # Load environment configuration
         velvet.config.environment(name)
 
+License
+-------
+
+The `MIT License`_ 
+
+Note that this project is no longer maintained so please consider using other tools instead.
+
+.. _`MIT License`: LICENSE
