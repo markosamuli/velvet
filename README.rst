@@ -1,6 +1,10 @@
 DEPRECATED: Velvet
 ==================
 
+.. image:: http://unmaintained.tech/badge.svg
+  :target: http://unmaintained.tech
+  :alt: No Maintenance Intended
+
 This is no longer supported, there are modern and better tools for the same job.
 
 AWS API and Fabric tasks for deploying applications into EC2 instances
